@@ -92,6 +92,7 @@ def loginCheck():
     emailEntry, passwordEntry, loginTitleFrame, loginFrame = loginScreen(checkVar = "getDetails")
     email = emailEntry.get()
     password = passwordEntry.get()
+    typeCheck = "login"
     if checkDatabase(typeCheck, email, password):
         mainMenu()
     else:
@@ -116,16 +117,24 @@ def signupScreen(emailEntry, passwordEntry, loginTitleFrame, loginFrame):
 
 def checkDatabase(typeCheck, email, password):
     f = open("userDetails.txt", "r+")
-    emailHash = hash(email)
-    for i in f:
-        None
+    if typeCheck == "signup":
+        counter = -1
+        for line in f.readlines():
+            counter =+ 1
+            line = line.strip('\n')
+            if line == email:
+                print(f.readline(counter+1).strip('\n'))
+                print(password)
+                if f.readline(counter+1).strip('\n') == password:
+                    return True
+        
 
 if __name__ == "__main__":
     w = Tk()
     w.title("Bean and Brew")
     w.option_add("*Font", "Montserrat")
     w.geometry("600x600")
-    #w.resizable(False, False)
+    w.resizable(False, False)
 
     style = Style()
     style.configure('TButton', font =('Montserrat', 12), borderwidth = '4')
