@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter.ttk import *
+from cipher import *
 
  
 def mainMenu():
@@ -15,7 +16,7 @@ def mainMenu():
 
     menuGridFrame = Frame()
     
-    bookTableButton = Button(menuGridFrame, text="Book a Table", width=20)
+    bookTableButton = Button(menuGridFrame, text="Book a Table", command=lambda: tableBooking(menuFrame, menuGridFrame), width=20)
     bookTableButton.grid(row = 0, column = 0, padx=20, pady=20)
 
     preOrderButton = Button(menuGridFrame, text="Pre Order Coffee", width=20)
@@ -40,12 +41,28 @@ def mainMenu():
     menuFrame.pack()
     menuGridFrame.pack()
     
+def tableBooking(frame1, frame2):
+    frame1.destroy()
+    frame2.destroy()
+    
+    tableTitleFrame = Frame()
+    tableFrame = Frame()
 
+    mainTitle = Label(tableTitleFrame, text="Bean and Brew", font=("Montserrat", 15))
+    mainTitle.pack(pady=20)
+
+    mainSubtitle = Label(tableTitleFrame, text="Book a table at one of resturants. First pick the location of the branch you would like to book at")
+    mainSubtitle.pack(pady=10)
+
+    harrogateButton = Button(tableFrame, text="Harrogate")
+    harrogateButton.grid(row
+
+    tableTitleFrame.pack()
 
 def loginScreen(checkVar, frame): 
     if checkVar != "invalidDetails":
-        loginTitleFrame = Frame(w)
-        loginFrame = Frame(w)
+        loginTitleFrame = Frame()
+        loginFrame = Frame()
         
         #creating main title
         mainTitle = Label(loginTitleFrame, text="Welcome to the Bean and Brew app", font=("Montserrat", 15))
@@ -66,7 +83,7 @@ def loginScreen(checkVar, frame):
         passwordEntry = Entry(loginFrame, text=1, width=25, show="*")
         passwordEntry.grid(row=1, column=1, padx=20, pady=20)
 
-        loginButton = Button(loginFrame, text="Login", width=30, command=loginCheck)
+        loginButton = Button(loginFrame, text="Login", width=30, command=lambda: loginCheck(emailEntry, passwordEntry, loginTitleFrame, loginFrame))
         loginButton.grid(row=2, column=0, columnspan = 2, padx=20, pady=20)
 
         signupLabel = Label(loginFrame, text="Or you can sign up here")
@@ -88,15 +105,17 @@ def loginScreen(checkVar, frame):
         
 
 
-def loginCheck():
-    emailEntry, passwordEntry, loginTitleFrame, loginFrame = loginScreen(checkVar = "getDetails")
+def loginCheck(emailEntry, passwordEntry, loginTitleFrame, loginFrame):
     email = emailEntry.get()
     password = passwordEntry.get()
     typeCheck = "login"
     if checkDatabase(typeCheck, email, password):
+        loginTitleFrame.destroy()
+        loginFrame.destroy()
         mainMenu()
     else:
-        None
+        checkVar = "invalidDetails"
+        loginScreen(checkVar, loginFrame)
         
 
 def signupScreen(emailEntry, passwordEntry, loginTitleFrame, loginFrame):
@@ -110,22 +129,42 @@ def signupScreen(emailEntry, passwordEntry, loginTitleFrame, loginFrame):
         if checkDatabase(typeCheck, email, password):
             loginTitleFrame.destroy()
             loginFrame.destroy()
+            
+            f = open("userDetails.txt", "a")
+            f.write(encrypt(email))
+            f.write("\n")
+            f.write(encrypt(password))
+            f.write("\n")
+            f.close()
             mainMenu()
         else:
             checkVar = "invalidDetails"
             loginScreen(checkVar, loginFrame)
 
 def checkDatabase(typeCheck, email, password):
-    f = open("userDetails.txt", "r+")
+    f = open("userDetails.txt", "r")
+    email = encrypt(email)
+    password = encrypt(password)
     if typeCheck == "signup":
-        counter = -1
+        emailUsed = False
         for line in f.readlines():
-            counter =+ 1
             line = line.strip('\n')
             if line == email:
-                print(f.readline(counter+1).strip('\n'))
-                print(password)
-                if f.readline(counter+1).strip('\n') == password:
+                emailUsed = True
+                break
+        if emailUsed:
+            return False
+        else:
+            return True
+        
+    elif typeCheck == "login":
+        checkNext = False
+        for line in f.readlines():
+            line = line.strip('\n')
+            if line == email:
+                checkNext = True
+            elif checkNext == True and line.strip('\n') == password:
+                    f.close()
                     return True
         
 
