@@ -7,7 +7,7 @@ def encrypt(text):
     for i in text:
         if i in alphabet:
             order = alphabet.index(i)
-            if order + 6 > 26:
+            if order + 6 >= 26:
                 overflow = order + 6 - 26
                 newText += alphabet[overflow]
             else:
@@ -51,4 +51,3 @@ def decrypt(text):
                 newText += str(i)
             
     return newText
-
