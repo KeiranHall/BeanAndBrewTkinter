@@ -132,4 +132,5 @@ def OrderBakedGoodsReceipt(a,b,c,mainList):
     frame.pack()
 
 #Calls the main function
-OrderBakedGoodsMain(root)
+if __name__ == "__main__":
+    OrderBakedGoodsMain(root)
